@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "549679377266",
+    "project_id": "gymexcercisecorrection",
+    "storage_bucket": "gymexcercisecorrection.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:549679377266:android:edce2ac423ed53286fcbeb",
+        "android_client_info": {
+          "package_name": "com.example.gym_excercise_correction"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAux3bzKKGfMxuO4iYJCwu0H7vlTH5eC6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
