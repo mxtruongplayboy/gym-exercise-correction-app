@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/exercise_button.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  HomePage({super.key});
+
+  User user = FirebaseAuth.instance.currentUser!;
 
   @override
   Widget build(BuildContext context) {
@@ -19,59 +22,38 @@ class HomePage extends StatelessWidget {
             ),
           ),
         ),
-        body: const Padding(
-          padding: EdgeInsets.all(16.0),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          '15',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text('WORKOUTS'),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Text(
-                          '104',
-                          style: TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text('MINUTES'),
-                      ],
-                    ),
-                  ],
+                Text(
+                  'Welcome, ${user.email!.split('@').first}',
+                  style: const TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                ExerciseButton(
+                 ExerciseButton(
                   imageUrl: './assets/images/plank.webp',
                   title: 'PLANK',
                 ),
-                ExerciseButton(
+                 ExerciseButton(
                   imageUrl: './assets/images/squat.webp',
                   title: 'SQUAT',
                 ),
-                ExerciseButton(
-                  imageUrl: './assets/images/bicep_curl.webp',
+                 ExerciseButton(
+                  imageUrl: './assets/images/bicep curl.webp',
                   title: 'BICEP CURL',
                 ),
-                ExerciseButton(
+                 ExerciseButton(
                   imageUrl: './assets/images/lunge.webp',
-                  title: 'LUNGES',
+                  title: 'LUNGE',
                 ),
-                ExerciseButton(
-                  imageUrl: './assets/images/push_up.webp',
+                 ExerciseButton(
+                  imageUrl: './assets/images/push up.webp',
                   title: 'PUSH UP',
                 ),
               ],

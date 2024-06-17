@@ -1,95 +1,68 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
-import 'package:gym_excercise_correction/firebase_options.dart';
-import 'package:gym_excercise_correction/model/BottomNavItem.dart';
-import 'package:gym_excercise_correction/views/account.dart';
-import 'package:gym_excercise_correction/views/history.dart';
-import 'package:gym_excercise_correction/views/home.dart';
+import 'dart:core';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:gym_excercise_correction/auth_gate.dart';
+import 'package:gym_excercise_correction/firebase_options.dart';
+import 'package:gym_excercise_correction/my_home_page.dart';
+import 'package:gym_excercise_correction/notification.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+
+@pragma('vm:entry-point')
+void _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+
+void main() async {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Ho_Chi_Minh'));
+  await FirebaseAPI().init();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    FlutterNativeSplash.remove();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Gym Exercise Correction',
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({
-    super.key,
-  });
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  final List<BottomNavItem> bottomNavItems = [
-    BottomNavItem(
-        icon: const Icon(
-          Icons.home,
-        ),
-        label: 'Home'),
-    BottomNavItem(
-        icon: const Icon(
-          Icons.history_rounded,
-        ),
-        label: 'History'),
-    BottomNavItem(
-        icon: const Icon(
-          Icons.account_circle_rounded,
-        ),
-        label: 'Account'),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: const [
-          HomePage(),
-          HistoryPage(),
-          AccountPage(),
-        ],
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        useMaterial3: true,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        selectedItemColor: Colors.blue,
-        unselectedFontSize: 10,
-        selectedFontSize: 10,
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: [
-          for (var i = 0; i < bottomNavItems.length; i++)
-            BottomNavigationBarItem(
-              icon: bottomNavItems.elementAt(i).icon ?? const Icon(Icons.error),
-              label: bottomNavItems.elementAt(i).label,
-            )
-        ],
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData && snapshot.data != null) {
+            return const MyHomePage(); // User is logged in
+          } else {
+            return const LoginPage(); // User is not logged in
+          }
+        },
       ),
     );
   }

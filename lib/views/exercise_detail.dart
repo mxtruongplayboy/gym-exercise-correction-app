@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_excercise_correction/model/BottomNavItem.dart';
+import 'package:gym_excercise_correction/views/check.dart';
 
 import '../widgets/exercise_guide.dart';
 
@@ -58,7 +59,8 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,8 +81,10 @@ class _ExerciseDetailState extends State<ExerciseDetail> {
         body: IndexedStack(
           index: _selectedIndex,
           children: [
-            ExerciseGuide(title: widget.title,),
-            const Center(child: Text('Check Page')),
+            ExerciseGuide(
+              title: widget.title,
+            ),
+            CheckPage(title: widget.title,),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

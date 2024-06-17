@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-/// Stateful widget to fetch and then display video content.
 class VideoPlayerScreen extends StatefulWidget {
-  const VideoPlayerScreen({super.key, required this.url});
+  const VideoPlayerScreen({Key? key, required this.url}) : super(key: key);
 
   final String url;
 
   @override
-  // ignore: library_private_types_in_public_api
   _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
+  double _currentSliderValue = 0.0;
 
   @override
   void initState() {
     super.initState();
-    initializeVideo();
-  }
-
-  Future<void> initializeVideo() async {
-    setState(() {
-      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-        ..initialize().then((_) {
-          setState(() {});
-        });
+    _controller = VideoPlayerController.network(widget.url);
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      setState(() {});
+    });
+    _controller.addListener(() {
+      setState(() {
+        _currentSliderValue = _controller.value.position.inSeconds.toDouble();
+      });
     });
   }
 
@@ -35,20 +34,47 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Center(
-          child: _controller.value.isInitialized
-              ? AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                )
-              : Container(),
+        body: FutureBuilder(
+          future: _initializeVideoPlayerFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return Stack(
+                children: [
+                  Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: VideoProgressIndicator(
+                      _controller,
+                      allowScrubbing: true,
+                      colors: VideoProgressColors(
+                        playedColor: Colors.red,
+                        bufferedColor: Colors.grey,
+                      ),
+                      padding: EdgeInsets.all(8),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
-              _controller.value.isPlaying
-                  ? _controller.pause()
-                  : _controller.play();
+              if (_controller.value.isPlaying) {
+                _controller.pause();
+              } else {
+                _controller.play();
+              }
             });
           },
           child: Icon(

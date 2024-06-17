@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_excercise_correction/views/history_detail.dart';
 
@@ -6,17 +7,32 @@ class HistoryItem extends StatelessWidget {
     super.key,
     required this.title,
     required this.imageUrl,
+    required this.date,
+    required this.duration,
+    required this.errorTotalCount,
+    required this.specificErrorFrames,
   });
 
   final String title;
   final String imageUrl;
+  final Timestamp date;
+  final int duration;
+  final int errorTotalCount;
+  final List specificErrorFrames;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return HistoryDetail();
+          return HistoryDetail(
+            title: title,
+            imageUrl: imageUrl,
+            date: date,
+            duration: duration,
+            errorTotalCount: errorTotalCount,
+            specificErrorFrames: specificErrorFrames,
+          );
         }));
       },
       child: Column(
@@ -40,9 +56,9 @@ class HistoryItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'April 17, 2024, 10:00 AM',
-                        style: TextStyle(
+                      Text(
+                        date.toDate().toString().substring(0, 19),
+                        style: const TextStyle(
                           fontSize: 14.0,
                         ),
                       ),
@@ -53,23 +69,23 @@ class HistoryItem extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const Row(
+                      Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.timer_sharp,
                             size: 16.0,
                             color: Colors.blue,
                           ),
-                          SizedBox(width: 4.0),
-                          Text('02:00'),
-                          SizedBox(width: 16.0),
-                          Icon(
+                          const SizedBox(width: 4.0),
+                          Text(duration.toString()),
+                          const SizedBox(width: 16.0),
+                          const Icon(
                             Icons.error_outline_rounded,
                             size: 16.0,
                             color: Colors.red,
                           ),
-                          SizedBox(width: 4.0),
-                          Text('2'),
+                          const SizedBox(width: 4.0),
+                          Text(errorTotalCount.toString()),
                         ],
                       )
                     ],
